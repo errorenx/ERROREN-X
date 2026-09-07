@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-heading: 'Syne', 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-body);
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+
+  code, pre, kbd, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Futuristic Keyframes & Smooth Hardware Accelerated Animations */
+@keyframes erroren-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes erroren-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes erroren-pulse-glow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.04);
+  }
+}
+
+.animate-erroren-spin-slow {
+  animation: erroren-spin-slow 24s linear infinite;
+}
+
+.animate-erroren-spin-reverse {
+  animation: erroren-spin-reverse 18s linear infinite;
+}
+
+.animate-erroren-pulse-glow {
+  animation: erroren-pulse-glow 4s ease-in-out infinite;
+}
+
+/* Bold Typography Utility Classes */
+.font-display {
+  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+}
+
+.bold-heading {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.bold-subheading {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.bold-tag {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* Custom smooth dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.45);
+}
+
+
+
