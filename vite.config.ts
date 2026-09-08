@@ -4,26 +4,17 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
-  // Default to root base '/' for Cloud Run and standard web servers.
-  // Use repository path only when building for GitHub Pages.
-  let base = '/';
+  // Use relative base './' by default so that the application works seamlessly on:
+  // - GitHub Pages (https://user.github.io/repo/)
+  // - Custom domains (https://example.com/)
+  // - Subpaths / subdirectories
+  // - Cloud Run / Express backend
+  let base = './';
 
-  if (process.env.BASE_URL && process.env.BASE_URL !== '/') {
-    base = process.env.BASE_URL.endsWith('/') ? process.env.BASE_URL : `${process.env.BASE_URL}/`;
-  } else if (process.env.GITHUB_REPOSITORY) {
-    const parts = process.env.GITHUB_REPOSITORY.split('/');
-    const repo = parts[1] || parts[0];
-    if (repo && !repo.toLowerCase().endsWith('.github.io')) {
-      base = `/${repo}/`;
-    }
-  } else if (
-    process.env.VITE_BASE_PATH &&
-    process.env.VITE_BASE_PATH !== '/' &&
-    process.env.VITE_BASE_PATH !== '//'
-  ) {
-    base = process.env.VITE_BASE_PATH.endsWith('/')
-      ? process.env.VITE_BASE_PATH
-      : `${process.env.VITE_BASE_PATH}/`;
+  if (process.env.BASE_URL && process.env.BASE_URL.trim() !== '') {
+    base = process.env.BASE_URL;
+  } else if (process.env.VITE_BASE_PATH && process.env.VITE_BASE_PATH.trim() !== '') {
+    base = process.env.VITE_BASE_PATH;
   }
 
   return {

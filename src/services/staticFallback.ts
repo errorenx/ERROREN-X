@@ -12,7 +12,13 @@ export const isStaticDeployment =
   typeof window !== "undefined" &&
   (window.location.hostname.endsWith("github.io") ||
     window.location.protocol === "file:" ||
-    window.location.hostname.includes("pages.dev"));
+    window.location.hostname.includes("pages.dev") ||
+    window.location.hostname.endsWith("vercel.app") ||
+    window.location.hostname.endsWith("netlify.app") ||
+    window.location.hostname.endsWith("web.app") ||
+    window.location.hostname.endsWith("firebaseapp.com") ||
+    window.location.hostname.endsWith("gitlab.io") ||
+    window.location.hostname.endsWith("surge.sh"));
 
 export const DEFAULT_STATIC_MODELS: ModelCatalogItem[] = [
   {
