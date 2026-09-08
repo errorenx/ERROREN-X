@@ -4,8 +4,9 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
-  // Support GitHub Pages repository path or relative paths
-  let base = './';
+  // Default to root base '/' for Cloud Run and standard web servers.
+  // Use repository path only when building for GitHub Pages.
+  let base = '/';
 
   if (process.env.BASE_URL && process.env.BASE_URL !== '/') {
     base = process.env.BASE_URL.endsWith('/') ? process.env.BASE_URL : `${process.env.BASE_URL}/`;

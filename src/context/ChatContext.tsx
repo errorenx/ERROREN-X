@@ -86,14 +86,22 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const convs = await api.getConversations();
       setConversations(convs);
-      if (convs.length > 0 && !currentConversationId) {
-        // Select first conversation by default if none selected
-        await selectConversation(convs[0].id);
-      }
+      setCurrentConversationId((prev) => {
+        if (!prev && convs.length > 0) {
+          const firstId = convs[0].id;
+          api.getConversation(firstId).then((conv) => {
+            setMessages(conv.messages || []);
+            if (conv.model) setSelectedModel(conv.model);
+            if (conv.webSearchEnabled !== undefined) setWebSearchEnabled(conv.webSearchEnabled);
+          }).catch(console.warn);
+          return firstId;
+        }
+        return prev;
+      });
     } catch (err) {
       console.warn("Failed to load conversations:", err);
     }
-  }, [isAuthenticated, currentConversationId]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     loadConversations();

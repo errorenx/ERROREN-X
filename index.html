@@ -26,28 +26,16 @@
             ERROREN <span style="color: #a78bfa;">X</span>
           </span>
         </div>
-        <div id="loading-spinner-row" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px;">
           <svg style="animation: spin 1s linear infinite; width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5">
             <circle cx="12" cy="12" r="10" stroke-opacity="0.2"></circle>
             <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
           </svg>
-          <span style="font-weight: 500;">Loading ERROREN X...</span>
-        </div>
-        <div id="slow-loading-hint" style="display: none; margin-top: 10px;">
-          <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Taking longer than expected?</p>
-          <button onclick="window.location.reload();" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); color: #c4b5fd; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer;">
-            Refresh Page
-          </button>
+          <span style="font-weight: 500;">Launching ERROREN X...</span>
         </div>
         <style>
           @keyframes spin { 100% { transform: rotate(360deg); } }
         </style>
-        <script>
-          setTimeout(function() {
-            var hint = document.getElementById('slow-loading-hint');
-            if (hint) hint.style.display = 'block';
-          }, 3500);
-        </script>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

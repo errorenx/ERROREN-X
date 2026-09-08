@@ -4,6 +4,21 @@ import App from './App.tsx';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import './index.css';
 
+// Intercept benign errors such as Vite WebSocket reconnects in iframe/container sandbox
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason && typeof event.reason.message === 'string') {
+      if (
+        event.reason.message.includes('websocket') ||
+        event.reason.message.includes('Failed to fetch')
+      ) {
+        // Prevent console clutter for benign network disconnects
+        event.preventDefault();
+      }
+    }
+  });
+}
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
   try {

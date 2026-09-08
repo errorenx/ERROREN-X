@@ -121,9 +121,14 @@ export const ThemeProvider: React.FC<{
       return true;
     }
 
-    return window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
+    try {
+      if (typeof window.matchMedia === "function") {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+    } catch {
+      // ignore
+    }
+    return true;
   });
 
   /* -------------------------------------------------------
@@ -157,29 +162,33 @@ export const ThemeProvider: React.FC<{
     /* SYSTEM MODE */
 
     if (theme === "system") {
-      const media = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      );
+      try {
+        if (typeof window.matchMedia === "function") {
+          const media = window.matchMedia("(prefers-color-scheme: dark)");
+          applyTheme(media.matches);
 
-      applyTheme(media.matches);
+          const handleChange = (event: MediaQueryListEvent) => {
+            applyTheme(event.matches);
+          };
 
-      const handleChange = (
-        event: MediaQueryListEvent
-      ) => {
-        applyTheme(event.matches);
-      };
-
-      media.addEventListener(
-        "change",
-        handleChange
-      );
-
-      return () => {
-        media.removeEventListener(
-          "change",
-          handleChange
-        );
-      };
+          if (typeof media.addEventListener === "function") {
+            media.addEventListener("change", handleChange);
+            return () => {
+              media.removeEventListener("change", handleChange);
+            };
+          } else if (typeof (media as any).addListener === "function") {
+            (media as any).addListener(handleChange);
+            return () => {
+              (media as any).removeListener(handleChange);
+            };
+          }
+        } else {
+          applyTheme(true);
+        }
+      } catch {
+        applyTheme(true);
+      }
+      return;
     }
 
     /* DARK / LIGHT MODE */
