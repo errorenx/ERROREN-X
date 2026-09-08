@@ -1,61 +1,156 @@
 <!doctype html>
-<html lang="en" class="dark" data-theme="dark" style="background-color: #020617; color: #f8fafc;">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
     <title>ERROREN X — Intelligence Beyond Limits</title>
-    <meta name="description" content="Intelligence Beyond Limits - Next-generation AI assistant platform featuring multimodal intelligence, real-time streaming, voice interaction, code intelligence, and file analysis." />
-    <meta property="og:title" content="ERROREN X — Intelligence Beyond Limits" />
-    <meta property="og:description" content="Intelligence Beyond Limits - Next-generation AI assistant platform featuring multimodal intelligence, real-time streaming, voice interaction, code intelligence, and file analysis." />
+
+    <meta
+      name="description"
+      content="ERROREN X — Next-generation AI assistant platform."
+    />
+
+    <meta
+      property="og:title"
+      content="ERROREN X — Intelligence Beyond Limits"
+    />
+
+    <meta
+      property="og:description"
+      content="Next-generation AI assistant platform."
+    />
+
     <meta property="og:type" content="website" />
+
     <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Syne:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Syne:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html,
+      body,
+      #root {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+        min-height: 100vh;
+      }
+
+      body {
+        background: #020617;
+        color: #f8fafc;
+      }
+
+      /* Only a tiny startup fallback.
+         It is automatically removed when React starts. */
+      #startup-fallback {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+        color: #f8fafc;
+        font-family: Arial, sans-serif;
+        transition: opacity 0.2s ease;
+      }
+
+      #startup-fallback.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .startup-box {
+        text-align: center;
+        padding: 24px;
+      }
+
+      .startup-logo {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
+        color: white;
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .startup-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .startup-text {
+        color: #94a3b8;
+        font-size: 13px;
+      }
+    </style>
   </head>
-  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-violet-600 selection:text-white font-sans" style="margin: 0; background-color: #020617; color: #f8fafc; min-height: 100vh;">
-    <!-- Splash Screen overlay (auto-dismissed on React mount) -->
-    <div id="splash-screen" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #020617; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; text-align: center; transition: opacity 0.25s ease;">
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #6366f1); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; color: #ffffff; box-shadow: 0 0 25px rgba(139, 92, 246, 0.45);">
-          X
-        </div>
-        <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">
-          ERROREN <span style="color: #a78bfa;">X</span>
-        </span>
+
+  <body>
+    <div id="startup-fallback">
+      <div class="startup-box">
+        <div class="startup-logo">X</div>
+        <div class="startup-title">ERROREN X</div>
+        <div class="startup-text">Starting workspace...</div>
       </div>
-      <div id="splash-status" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px;">
-        <svg style="animation: spin 1s linear infinite; width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10" stroke-opacity="0.2"></circle>
-          <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
-        </svg>
-        <span id="splash-text" style="font-weight: 500;">ERROREN</span>
-      </div>
-      <div id="splash-fallback-actions" style="display: none; margin-top: 22px;">
-        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Taking a moment to load components?</p>
-        <button onclick="window.location.reload();" style="padding: 9px 18px; border-radius: 8px; background: #8b5cf6; color: #fff; border: none; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 8px;">
-          Refresh
-        </button>
-        <button onclick="try { localStorage.clear(); sessionStorage.clear(); } catch(e){} window.location.reload();" style="padding: 9px 18px; border-radius: 8px; background: #1e293b; color: #cbd5e1; border: 1px solid #334155; font-size: 13px; font-weight: 600; cursor: pointer;">
-          Clear Cache
-        </button>
-      </div>
-      <style>
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-      </style>
     </div>
 
-    <!-- Clean Target React Container -->
     <div id="root"></div>
 
     <script>
-      // Fallback timer: if app takes more than 3.5s, display refresh controls
-      setTimeout(function() {
-        var act = document.getElementById('splash-fallback-actions');
-        if (act) act.style.display = 'block';
-      }, 3500);
+      /*
+       * Safety fallback:
+       * Never allow the old permanent loading screen to remain.
+       */
+      window.__ERROREN_X_HIDE_STARTUP__ = function () {
+        var screen = document.getElementById("startup-fallback");
+
+        if (screen) {
+          screen.classList.add("hidden");
+
+          setTimeout(function () {
+            if (screen && screen.parentNode) {
+              screen.parentNode.removeChild(screen);
+            }
+          }, 250);
+        }
+      };
+
+      /*
+       * If React cannot start, do not leave an endless spinner.
+       */
+      window.setTimeout(function () {
+        var screen = document.getElementById("startup-fallback");
+
+        if (screen) {
+          screen.innerHTML =
+            '<div style="text-align:center;padding:24px;font-family:Arial,sans-serif">' +
+            '<div style="font-size:22px;font-weight:700;margin-bottom:8px">ERROREN X</div>' +
+            '<div style="color:#94a3b8;font-size:14px">Unable to start the application.</div>' +
+            '<button onclick="window.location.reload()" style="margin-top:18px;padding:10px 18px;border:0;border-radius:10px;background:#7c3aed;color:white;cursor:pointer;font-weight:600">Reload</button>' +
+            "</div>";
+        }
+      }, 10000);
     </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
