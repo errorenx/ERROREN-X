@@ -1,32 +1,267 @@
 @import "tailwindcss";
 
+/* =========================================================
+   ERROREN X — GLOBAL THEME SYSTEM
+   ========================================================= */
+
+:root {
+  /* Accent */
+  --accent-color: #8b5cf6;
+  --primary: #8b5cf6;
+  --accent: #8b5cf6;
+  --brand-color: #8b5cf6;
+  --theme-accent: #8b5cf6;
+  --accent-rgb: 139, 92, 246;
+
+  /* Light theme */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --border-color: #e2e8f0;
+  --card-bg: #ffffff;
+  --input-bg: #f8fafc;
+
+  /* Fonts */
+  --font-heading:
+    "Syne",
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-body:
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-mono:
+    "JetBrains Mono",
+    monospace;
+}
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+html.dark,
+html[data-theme="dark"] {
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1e293b;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  --border-color: #1e293b;
+  --card-bg: #0f172a;
+  --input-bg: #020617;
+}
+
+/* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+html[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --border-color: #e2e8f0;
+  --card-bg: #ffffff;
+  --input-bg: #f8fafc;
+}
+
+/* =========================================================
+   SYSTEM THEME
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    --bg-primary: #020617;
+    --bg-secondary: #0f172a;
+    --bg-tertiary: #1e293b;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --border-color: #1e293b;
+    --card-bg: #0f172a;
+    --input-bg: #020617;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  html[data-theme="system"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    --border-color: #e2e8f0;
+    --card-bg: #ffffff;
+    --input-bg: #f8fafc;
+  }
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
 @layer base {
-  :root {
-    --font-heading: 'Syne', 'Plus Jakarta Sans', -apple-system, sans-serif;
-    --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+  html {
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+
+    background: var(--bg-primary);
+    color: var(--text-primary);
+
     font-family: var(--font-body);
     letter-spacing: -0.01em;
+
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
 
-  h1, h2, h3, h4, .font-heading {
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading {
     font-family: var(--font-heading);
     letter-spacing: -0.03em;
   }
 
-  code, pre, kbd, .font-mono {
+  code,
+  pre,
+  kbd,
+  .font-mono {
     font-family: var(--font-mono);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: rgba(var(--accent-rgb), 0.25);
   }
 }
 
-/* Futuristic Keyframes & Smooth Hardware Accelerated Animations */
+/* =========================================================
+   GLOBAL THEME UTILITIES
+   ========================================================= */
+
+.theme-bg {
+  background-color: var(--bg-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.theme-bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.theme-card {
+  background-color: var(--card-bg);
+}
+
+.theme-input {
+  background-color: var(--input-bg);
+}
+
+.theme-text {
+  color: var(--text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+/* =========================================================
+   ACCENT UTILITIES
+   ========================================================= */
+
+.accent-text {
+  color: var(--accent-color);
+}
+
+.accent-bg {
+  background-color: var(--accent-color);
+}
+
+.accent-border {
+  border-color: var(--accent-color);
+}
+
+.accent-ring {
+  --tw-ring-color: var(--accent-color);
+}
+
+.accent-glow {
+  box-shadow:
+    0 0 20px rgba(var(--accent-rgb), 0.25),
+    0 0 40px rgba(var(--accent-rgb), 0.1);
+}
+
+.accent-gradient {
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent-color),
+      rgba(var(--accent-rgb), 0.65)
+    );
+}
+
+/* =========================================================
+   FUTURISTIC KEYFRAMES
+   ========================================================= */
+
 @keyframes erroren-spin-slow {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -36,59 +271,94 @@
   from {
     transform: rotate(360deg);
   }
+
   to {
     transform: rotate(0deg);
   }
 }
 
 @keyframes erroren-pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.35;
     transform: scale(0.98);
   }
+
   50% {
     opacity: 0.75;
     transform: scale(1.04);
   }
 }
 
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
 .animate-erroren-spin-slow {
-  animation: erroren-spin-slow 24s linear infinite;
+  animation:
+    erroren-spin-slow 24s linear infinite;
 }
 
 .animate-erroren-spin-reverse {
-  animation: erroren-spin-reverse 18s linear infinite;
+  animation:
+    erroren-spin-reverse 18s linear infinite;
 }
 
 .animate-erroren-pulse-glow {
-  animation: erroren-pulse-glow 4s ease-in-out infinite;
+  animation:
+    erroren-pulse-glow 4s ease-in-out infinite;
 }
 
-/* Bold Typography Utility Classes */
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
 .font-display {
-  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  font-family:
+    "Syne",
+    "Plus Jakarta Sans",
+    sans-serif;
 }
 
 .bold-heading {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-weight: 800;
   letter-spacing: -0.035em;
 }
 
 .bold-subheading {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .bold-tag {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 
-/* Custom smooth dark scrollbar */
+/* =========================================================
+   SMOOTH TRANSITIONS
+   ========================================================= */
+
+body,
+button,
+input,
+textarea,
+select,
+div {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+/* =========================================================
+   CUSTOM SCROLLBAR
+   ========================================================= */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -99,13 +369,40 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.25);
+  background:
+    rgba(var(--accent-rgb), 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.45);
+  background:
+    rgba(var(--accent-rgb), 0.45);
 }
 
+/* Firefox */
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(var(--accent-rgb), 0.35)
+    transparent;
+}
 
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   ROOT
+   ========================================================= */
+
+#root {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}

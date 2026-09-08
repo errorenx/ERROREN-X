@@ -1,6 +1,5 @@
 {
   "name": "ERROREN X",
   "description": "Intelligence Beyond Limits - Next-generation AI assistant platform featuring multimodal intelligence, real-time streaming, voice interaction, code intelligence, and file analysis.",
-  "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

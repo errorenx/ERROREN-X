@@ -8,7 +8,6 @@ import {
   Palette,
   Globe,
   Settings,
-  Sparkles,
 } from "lucide-react";
 
 interface ChatHeaderProps {
@@ -33,12 +32,36 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   } = useChat();
 
   return (
-    <header className="h-14 border-b border-violet-500/15 bg-slate-950/80 backdrop-blur-xl px-4 flex items-center justify-between z-20 shrink-0">
-      {/* Left: Mobile menu toggle + Model selector */}
+    <header
+      className="h-14 backdrop-blur-xl px-4 flex items-center justify-between z-20 shrink-0"
+      style={{
+        background:
+          "color-mix(in srgb, var(--bg-secondary) 88%, transparent)",
+        borderBottom:
+          "1px solid rgba(var(--accent-rgb), 0.15)",
+        color: "var(--text-primary)",
+      }}
+    >
+      {/* Left */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 border border-violet-500/15"
+          className="lg:hidden p-2 rounded-xl border transition-colors"
+          style={{
+            color: "var(--text-secondary)",
+            background: "transparent",
+            borderColor: "rgba(var(--accent-rgb), 0.15)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.background =
+              "rgba(var(--accent-rgb), 0.10)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color =
+              "var(--text-secondary)";
+            e.currentTarget.style.background = "transparent";
+          }}
           aria-label="Open navigation sidebar"
         >
           <Menu className="w-5 h-5" />
@@ -47,28 +70,78 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <ModelSelector />
 
         {webSearchEnabled && (
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-950/80 border border-violet-500/30 text-violet-300 text-[11px] font-medium shadow-sm">
-            <Globe className="w-3 h-3 text-violet-400 animate-pulse" />
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium shadow-sm"
+            style={{
+              background:
+                "rgba(var(--accent-rgb), 0.12)",
+              border:
+                "1px solid rgba(var(--accent-rgb), 0.30)",
+              color: "var(--accent-color)",
+            }}
+          >
+            <Globe
+              className="w-3 h-3 animate-pulse"
+              style={{
+                color: "var(--accent-color)",
+              }}
+            />
+
             <span>Search Grounding Active</span>
           </div>
         )}
       </div>
 
-      {/* Center: Conversation Title (on larger screens) */}
-      <div className="hidden md:flex items-center gap-2 max-w-sm truncate text-xs text-slate-400">
-        <span className="truncate font-medium text-slate-300">
+      {/* Center */}
+      <div
+        className="hidden md:flex items-center gap-2 max-w-sm truncate text-xs"
+        style={{
+          color: "var(--text-secondary)",
+        }}
+      >
+        <span
+          className="truncate font-medium"
+          style={{
+            color: "var(--text-primary)",
+          }}
+        >
           {currentConversation?.title || "New Conversation"}
         </span>
       </div>
 
-      {/* Right: Quick Action Buttons */}
+      {/* Right */}
       <div className="flex items-center gap-1 sm:gap-2">
         <button
           onClick={onOpenImageStudio}
-          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-violet-950/50 hover:bg-violet-900/80 text-violet-300 border border-violet-500/20 text-xs font-semibold transition-colors"
+          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+          style={{
+            background:
+              "rgba(var(--accent-rgb), 0.10)",
+            color: "var(--accent-color)",
+            border:
+              "1px solid rgba(var(--accent-rgb), 0.20)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              "rgba(var(--accent-rgb), 0.18)";
+            e.currentTarget.style.borderColor =
+              "rgba(var(--accent-rgb), 0.35)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              "rgba(var(--accent-rgb), 0.10)";
+            e.currentTarget.style.borderColor =
+              "rgba(var(--accent-rgb), 0.20)";
+          }}
           title="Open Image Generation Studio"
         >
-          <Palette className="w-3.5 h-3.5 text-violet-400" />
+          <Palette
+            className="w-3.5 h-3.5"
+            style={{
+              color: "var(--accent-color)",
+            }}
+          />
+
           <span>Image Studio</span>
         </button>
 
@@ -76,16 +149,58 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           <>
             <button
               onClick={onOpenShare}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-violet-500/20 text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors"
+              style={{
+                background: "var(--bg-tertiary)",
+                color: "var(--text-primary)",
+                border:
+                  "1px solid rgba(var(--accent-rgb), 0.20)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background =
+                  "rgba(var(--accent-rgb), 0.12)";
+                e.currentTarget.style.borderColor =
+                  "rgba(var(--accent-rgb), 0.35)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background =
+                  "var(--bg-tertiary)";
+                e.currentTarget.style.borderColor =
+                  "rgba(var(--accent-rgb), 0.20)";
+              }}
               title="Share this conversation"
             >
-              <Share2 className="w-3.5 h-3.5 text-violet-400" />
+              <Share2
+                className="w-3.5 h-3.5"
+                style={{
+                  color: "var(--accent-color)",
+                }}
+              />
+
               <span className="hidden sm:inline">Share</span>
             </button>
 
             <button
               onClick={onClearChat}
-              className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-500/20 transition-colors"
+              className="p-2 rounded-xl border border-transparent transition-colors"
+              style={{
+                color: "var(--text-secondary)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#ef4444";
+                e.currentTarget.style.background =
+                  "rgba(239, 68, 68, 0.10)";
+                e.currentTarget.style.borderColor =
+                  "rgba(239, 68, 68, 0.20)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color =
+                  "var(--text-secondary)";
+                e.currentTarget.style.background =
+                  "transparent";
+                e.currentTarget.style.borderColor =
+                  "transparent";
+              }}
               title="Clear conversation messages"
               aria-label="Clear Chat"
             >
@@ -96,11 +211,37 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
         <button
           onClick={onOpenSettings}
-          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 border border-violet-500/15 transition-colors"
+          className="p-2 rounded-xl border transition-colors"
+          style={{
+            color: "var(--text-secondary)",
+            borderColor:
+              "rgba(var(--accent-rgb), 0.15)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color =
+              "var(--text-primary)";
+            e.currentTarget.style.background =
+              "rgba(var(--accent-rgb), 0.10)";
+            e.currentTarget.style.borderColor =
+              "rgba(var(--accent-rgb), 0.30)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color =
+              "var(--text-secondary)";
+            e.currentTarget.style.background =
+              "transparent";
+            e.currentTarget.style.borderColor =
+              "rgba(var(--accent-rgb), 0.15)";
+          }}
           title="Settings"
           aria-label="Settings"
         >
-          <Settings className="w-4 h-4 text-slate-300" />
+          <Settings
+            className="w-4 h-4"
+            style={{
+              color: "var(--accent-color)",
+            }}
+          />
         </button>
       </div>
     </header>

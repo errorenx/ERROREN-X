@@ -7,7 +7,10 @@ interface CodeBlockProps {
   code: string;
 }
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({ language = "text", code }) => {
+export const CodeBlock: React.FC<CodeBlockProps> = ({
+  language = "text",
+  code,
+}) => {
   const [copied, setCopied] = useState(false);
   const { addToast } = useToast();
 
@@ -49,33 +52,121 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ language = "text", code })
     const ext = extMap[cleanLang.toLowerCase()] || "txt";
     const filename = `erroren_x_code_${Date.now()}.${ext}`;
 
-    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+    const blob = new Blob([code], {
+      type: "text/plain;charset=utf-8",
+    });
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
+
     link.href = url;
     link.download = filename;
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
     URL.revokeObjectURL(url);
+
     addToast(`Downloaded as ${filename}`, "success");
   };
 
   const lines = code.trim().split("\n");
 
   return (
-    <div className="my-4 rounded-xl overflow-hidden border border-violet-500/20 bg-slate-950/90 shadow-lg text-xs md:text-sm">
+    <div
+      className="
+        my-4
+        rounded-xl
+        overflow-hidden
+        border
+        shadow-lg
+        text-xs
+        md:text-sm
+      "
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "color-mix(in srgb, var(--accent-color) 25%, var(--border-color))",
+        boxShadow:
+          "0 10px 30px rgba(0,0,0,0.12), 0 0 20px rgba(var(--accent-rgb), 0.06)",
+      }}
+    >
       {/* Code Header Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-900/90 border-b border-violet-500/10 text-slate-400 select-none">
-        <div className="flex items-center gap-2 font-mono font-medium text-violet-300">
-          <Code2 className="w-4 h-4 text-violet-400" />
-          <span className="uppercase tracking-wider text-[11px] font-semibold">{cleanLang}</span>
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          px-4
+          py-2
+          border-b
+          select-none
+        "
+        style={{
+          backgroundColor:
+            "color-mix(in srgb, var(--bg-secondary) 88%, var(--accent-color) 12%)",
+          borderColor:
+            "color-mix(in srgb, var(--accent-color) 18%, var(--border-color))",
+          color: "var(--text-secondary)",
+        }}
+      >
+        {/* Language */}
+        <div
+          className="
+            flex
+            items-center
+            gap-2
+            font-mono
+            font-medium
+          "
+          style={{
+            color: "var(--accent-color)",
+          }}
+        >
+          <Code2
+            className="w-4 h-4"
+            style={{
+              color: "var(--accent-color)",
+            }}
+          />
+
+          <span className="uppercase tracking-wider text-[11px] font-semibold">
+            {cleanLang}
+          </span>
         </div>
 
+        {/* Actions */}
         <div className="flex items-center gap-1.5">
+          {/* Download */}
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md text-slate-300 hover:text-white hover:bg-violet-950/60 border border-transparent hover:border-violet-500/20 transition-colors text-xs"
+            className="
+              flex
+              items-center
+              gap-1
+              px-2.5
+              py-1
+              rounded-md
+              border
+              border-transparent
+              transition-colors
+              text-xs
+            "
+            style={{
+              color: "var(--text-secondary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--accent-color)";
+              e.currentTarget.style.backgroundColor =
+                "color-mix(in srgb, var(--accent-color) 12%, transparent)";
+              e.currentTarget.style.borderColor =
+                "color-mix(in srgb, var(--accent-color) 25%, transparent)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--text-secondary)";
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.borderColor = "transparent";
+            }}
             title="Download code as file"
             aria-label="Download Code"
           >
@@ -83,31 +174,111 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ language = "text", code })
             <span className="hidden sm:inline">Download</span>
           </button>
 
+          {/* Copy */}
           <button
             onClick={handleCopy}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors text-xs border ${
-              copied
-                ? "bg-emerald-950/60 border-emerald-500/30 text-emerald-300"
-                : "text-slate-300 hover:text-white hover:bg-violet-950/60 border-transparent hover:border-violet-500/20"
-            }`}
+            className="
+              flex
+              items-center
+              gap-1
+              px-2.5
+              py-1
+              rounded-md
+              border
+              transition-colors
+              text-xs
+            "
+            style={{
+              color: copied
+                ? "#34d399"
+                : "var(--text-secondary)",
+              backgroundColor: copied
+                ? "rgba(16,185,129,0.12)"
+                : "transparent",
+              borderColor: copied
+                ? "rgba(16,185,129,0.30)"
+                : "transparent",
+            }}
+            onMouseEnter={(e) => {
+              if (!copied) {
+                e.currentTarget.style.color = "var(--accent-color)";
+                e.currentTarget.style.backgroundColor =
+                  "color-mix(in srgb, var(--accent-color) 12%, transparent)";
+                e.currentTarget.style.borderColor =
+                  "color-mix(in srgb, var(--accent-color) 25%, transparent)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!copied) {
+                e.currentTarget.style.color = "var(--text-secondary)";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.borderColor = "transparent";
+              }
+            }}
             title="Copy code"
             aria-label="Copy Code"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? (
+              <Check
+                className="w-3.5 h-3.5"
+                style={{ color: "#34d399" }}
+              />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+
             <span>{copied ? "Copied" : "Copy"}</span>
           </button>
         </div>
       </div>
 
       {/* Code Body */}
-      <div className="p-4 overflow-x-auto font-mono text-slate-200 leading-relaxed scrollbar-thin scrollbar-thumb-violet-950 scrollbar-track-transparent">
+      <div
+        className="
+          p-4
+          overflow-x-auto
+          font-mono
+          leading-relaxed
+          scrollbar-thin
+        "
+        style={{
+          backgroundColor:
+            "color-mix(in srgb, var(--bg-tertiary) 72%, var(--card-bg) 28%)",
+          color: "var(--text-primary)",
+        }}
+      >
         <pre className="flex">
-          <div className="select-none text-slate-600 text-right pr-4 border-r border-slate-800 shrink-0 font-mono text-[11px] leading-relaxed">
+          {/* Line Numbers */}
+          <div
+            className="
+              select-none
+              text-right
+              pr-4
+              border-r
+              shrink-0
+              font-mono
+              text-[11px]
+              leading-relaxed
+            "
+            style={{
+              color: "var(--text-muted)",
+              borderColor: "var(--border-color)",
+            }}
+          >
             {lines.map((_, i) => (
               <div key={i}>{i + 1}</div>
             ))}
           </div>
-          <code className="pl-4 flex-1">{code}</code>
+
+          {/* Code */}
+          <code
+            className="pl-4 flex-1"
+            style={{
+              color: "var(--text-primary)",
+            }}
+          >
+            {code}
+          </code>
         </pre>
       </div>
     </div>

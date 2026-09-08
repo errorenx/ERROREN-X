@@ -22,6 +22,7 @@ import { Loader2 } from "lucide-react";
 
 export const MainLayout: React.FC = () => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+
   const {
     currentConversation,
     createNewChat,
@@ -33,24 +34,28 @@ export const MainLayout: React.FC = () => {
 
   const { addToast } = useToast();
 
-  // URL state for public shared chats (e.g. ?share=share_123 or /shared/share_123)
+  // Public shared chat
   const [shareParamId, setShareParamId] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("share");
   });
 
-  // Modal States
+  // Modal states
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<"login" | "register">("login");
+  const [authModalMode, setAuthModalMode] =
+    useState<"login" | "register">("login");
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isImageStudioOpen, setIsImageStudioOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [conversationToShare, setConversationToShare] = useState<Conversation | null>(null);
 
-  // Delete Confirm Modal State
+  const [conversationToShare, setConversationToShare] =
+    useState<Conversation | null>(null);
+
+  // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState<{
     isOpen: boolean;
     type: "single" | "clear" | "all";
@@ -60,18 +65,26 @@ export const MainLayout: React.FC = () => {
     type: "single",
   });
 
-  // Keyboard Shortcuts Listener
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isCtrlOrCmd = e.ctrlKey || e.metaKey;
 
-      if (isCtrlOrCmd && (e.key === "n" || e.key === "N" || e.key === "k" || e.key === "K")) {
+      if (
+        isCtrlOrCmd &&
+        (e.key === "n" ||
+          e.key === "N" ||
+          e.key === "k" ||
+          e.key === "K")
+      ) {
         e.preventDefault();
+
         if (isAuthenticated) {
           createNewChat();
         }
       } else if (isCtrlOrCmd && e.key === ",") {
         e.preventDefault();
+
         if (isAuthenticated) {
           setIsSettingsOpen(true);
         }
@@ -83,28 +96,37 @@ export const MainLayout: React.FC = () => {
         setIsShareModalOpen(false);
         setIsAdminOpen(false);
         setIsAuthModalOpen(false);
-        setDeleteTarget({ isOpen: false, type: "single" });
+
+        setDeleteTarget({
+          isOpen: false,
+          type: "single",
+        });
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isAuthenticated, createNewChat]);
 
-  // Handle prompt selected from EmptyChat suggestion cards
+  // Prompt selected from empty chat
   const handleSelectPrompt = (prompt: string) => {
     sendMessage(prompt);
   };
 
-  // Trigger share modal for active or selected conversation
+  // Open share modal
   const handleOpenShare = (conv?: Conversation) => {
     const target = conv || currentConversation;
+
     if (!target) return;
+
     setConversationToShare(target);
     setIsShareModalOpen(true);
   };
 
-  // Trigger delete request
+  // Delete single conversation
   const handleDeleteRequest = (conv: Conversation) => {
     setDeleteTarget({
       isOpen: true,
@@ -113,8 +135,10 @@ export const MainLayout: React.FC = () => {
     });
   };
 
+  // Clear current conversation
   const handleClearRequest = () => {
     if (!currentConversation) return;
+
     setDeleteTarget({
       isOpen: true,
       type: "clear",
@@ -122,6 +146,7 @@ export const MainLayout: React.FC = () => {
     });
   };
 
+  // Delete all chats
   const handleDeleteAllChatsRequest = () => {
     setDeleteTarget({
       isOpen: true,
@@ -129,49 +154,95 @@ export const MainLayout: React.FC = () => {
     });
   };
 
+  // Confirm delete
   const handleConfirmDelete = async () => {
-    if (deleteTarget.type === "single" && deleteTarget.conversation) {
+    if (
+      deleteTarget.type === "single" &&
+      deleteTarget.conversation
+    ) {
       await deleteConversation(deleteTarget.conversation.id);
     } else if (deleteTarget.type === "clear") {
       await clearCurrentConversation();
     } else if (deleteTarget.type === "all") {
       try {
         const res = await api.deleteAllUserChats();
+
         await loadConversations();
         createNewChat();
+
         addToast(res.message, "info");
       } catch (err: any) {
-        addToast(err.message || "Failed to delete all conversations", "error");
+        addToast(
+          err.message || "Failed to delete all conversations",
+          "error"
+        );
       }
     }
+
+    setDeleteTarget({
+      isOpen: false,
+      type: "single",
+    });
   };
 
-  // If public shared link is opened
+  // Shared chat view
   if (shareParamId) {
     return (
-      <SharedChatView
-        shareId={shareParamId}
-        onExit={() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          setShareParamId(null);
-        }}
-        onStartChat={() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          setShareParamId(null);
-          if (!isAuthenticated) {
-            setIsAuthModalOpen(true);
-          }
-        }}
-      />
+      <div className="theme-bg min-h-screen text-[var(--text-primary)]">
+        <SharedChatView
+          shareId={shareParamId}
+          onExit={() => {
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+
+            setShareParamId(null);
+          }}
+          onStartChat={() => {
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+
+            setShareParamId(null);
+
+            if (!isAuthenticated) {
+              setIsAuthModalOpen(true);
+            }
+          }}
+        />
+      </div>
     );
   }
 
-  // Loading state
+  // Authentication loading
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400">
-        <Loader2 className="w-8 h-8 text-violet-500 animate-spin mb-3" />
-        <span className="text-xs font-mono tracking-wider text-violet-300">INITIALIZING ERROREN X...</span>
+      <div
+        className="min-h-screen flex flex-col items-center justify-center font-sans"
+        style={{
+          background: "var(--bg-primary)",
+          color: "var(--text-secondary)",
+        }}
+      >
+        <Loader2
+          className="w-8 h-8 animate-spin mb-3"
+          style={{
+            color: "var(--accent-color)",
+          }}
+        />
+
+        <span
+          className="text-xs font-mono tracking-wider"
+          style={{
+            color: "var(--accent-color)",
+          }}
+        >
+          INITIALIZING ERROREN X...
+        </span>
       </div>
     );
   }
@@ -195,16 +266,29 @@ export const MainLayout: React.FC = () => {
           onClose={() => setIsAuthModalOpen(false)}
         />
 
-        <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
-        <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+        <AboutModal
+          isOpen={isAboutOpen}
+          onClose={() => setIsAboutOpen(false)}
+        />
+
+        <HelpModal
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+        />
       </>
     );
   }
 
-  // Authenticated Application Workspace Layout
+  // Main application
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
-      {/* Navigation Sidebar */}
+    <div
+      className="flex h-screen w-screen overflow-hidden font-sans"
+      style={{
+        background: "var(--bg-primary)",
+        color: "var(--text-primary)",
+      }}
+    >
+      {/* Sidebar */}
       <Sidebar
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenImageStudio={() => setIsImageStudioOpen(true)}
@@ -215,12 +299,24 @@ export const MainLayout: React.FC = () => {
         onDeleteRequest={handleDeleteRequest}
       />
 
-      {/* Main Chat Workspace Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-950 relative overflow-hidden">
-        {/* Ambient Top Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-40 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+      {/* Main workspace */}
+      <div
+        className="flex-1 flex flex-col min-w-0 relative overflow-hidden"
+        style={{
+          background: "var(--bg-primary)",
+          color: "var(--text-primary)",
+        }}
+      >
+        {/* Accent ambient glow */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-40 rounded-full blur-[100px] pointer-events-none -z-10"
+          style={{
+            background:
+              "rgba(var(--accent-rgb), 0.10)",
+          }}
+        />
 
-        {/* Top Header */}
+        {/* Header */}
         <ChatHeader
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenImageStudio={() => setIsImageStudioOpen(true)}
@@ -228,35 +324,41 @@ export const MainLayout: React.FC = () => {
           onClearChat={handleClearRequest}
         />
 
-        {/* Chat Messages Body */}
+        {/* Chat */}
         <ChatArea onSelectPrompt={handleSelectPrompt} />
 
-        {/* Bottom Input Box */}
-        <ChatInput onOpenImageStudio={() => setIsImageStudioOpen(true)} />
+        {/* Input */}
+        <ChatInput
+          onOpenImageStudio={() => setIsImageStudioOpen(true)}
+        />
       </div>
 
-      {/* Modals & Dialogs */}
+      {/* Settings */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         onDeleteAllChats={handleDeleteAllChatsRequest}
       />
 
+      {/* Image Studio */}
       <ImageStudioModal
         isOpen={isImageStudioOpen}
         onClose={() => setIsImageStudioOpen(false)}
       />
 
+      {/* Help */}
       <HelpModal
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
       />
 
+      {/* About */}
       <AboutModal
         isOpen={isAboutOpen}
         onClose={() => setIsAboutOpen(false)}
       />
 
+      {/* Share */}
       <ShareChatModal
         conversation={conversationToShare || currentConversation}
         isOpen={isShareModalOpen}
@@ -266,11 +368,13 @@ export const MainLayout: React.FC = () => {
         }}
       />
 
+      {/* Admin */}
       <AdminDashboardModal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
       />
 
+      {/* Delete confirmation */}
       <DeleteConfirmModal
         isOpen={deleteTarget.isOpen}
         title={
@@ -285,11 +389,23 @@ export const MainLayout: React.FC = () => {
             ? "Are you sure you want to permanently delete all your conversation history and associated attachments? This cannot be reversed."
             : deleteTarget.type === "clear"
             ? "Are you sure you want to erase all messages from this conversation?"
-            : `Are you sure you want to delete "${deleteTarget.conversation?.title || "this conversation"}"?`
+            : `Are you sure you want to delete "${
+                deleteTarget.conversation?.title ||
+                "this conversation"
+              }"?`
         }
-        confirmLabel={deleteTarget.type === "all" ? "Purge Everything" : "Delete"}
+        confirmLabel={
+          deleteTarget.type === "all"
+            ? "Purge Everything"
+            : "Delete"
+        }
         onConfirm={handleConfirmDelete}
-        onClose={() => setDeleteTarget({ isOpen: false, type: "single" })}
+        onClose={() =>
+          setDeleteTarget({
+            isOpen: false,
+            type: "single",
+          })
+        }
       />
     </div>
   );
