@@ -6,15 +6,23 @@ import { defineConfig } from 'vite';
 export default defineConfig(() => {
   // Support GitHub Pages repository path or relative paths
   let base = './';
-  if (process.env.VITE_BASE_PATH) {
-    base = process.env.VITE_BASE_PATH;
-  } else if (process.env.BASE_URL) {
-    base = process.env.BASE_URL;
-  } else if (process.env.GITHUB_REPOSITORY) {
-    const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
-    if (repo && !repo.endsWith('.github.io')) {
+
+  if (process.env.GITHUB_REPOSITORY) {
+    const parts = process.env.GITHUB_REPOSITORY.split('/');
+    const repo = parts[1] || parts[0];
+    if (repo && !repo.toLowerCase().endsWith('.github.io')) {
       base = `/${repo}/`;
     }
+  } else if (
+    process.env.VITE_BASE_PATH &&
+    process.env.VITE_BASE_PATH !== '/' &&
+    process.env.VITE_BASE_PATH !== '//'
+  ) {
+    base = process.env.VITE_BASE_PATH.endsWith('/')
+      ? process.env.VITE_BASE_PATH
+      : `${process.env.VITE_BASE_PATH}/`;
+  } else if (process.env.BASE_URL) {
+    base = process.env.BASE_URL;
   }
 
   return {

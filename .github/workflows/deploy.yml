@@ -36,7 +36,6 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_BASE_PATH: /${{ github.event.repository.name }}/
 
       - name: Ensure .nojekyll and 404.html in build output
         run: |
