@@ -13,21 +13,59 @@ import {
   DEFAULT_STATIC_MODELS,
 } from "./staticFallback";
 
+export const safeStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window === "undefined" || !window.localStorage) return null;
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch {}
+  },
+  removeItem(key: string): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {}
+  },
+  clear(): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.clear();
+      }
+    } catch {}
+  }
+};
+
 const TOKEN_KEY = "erroren_x_auth_token";
 
 export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return safeStorage.getItem(TOKEN_KEY);
 }
 
 export function setStoredToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+  safeStorage.setItem(TOKEN_KEY, token);
 }
 
 export function clearStoredToken() {
-  localStorage.removeItem(TOKEN_KEY);
+  safeStorage.removeItem(TOKEN_KEY);
 }
 
+let backendOffline = isStaticDeployment;
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  if (backendOffline || isStaticDeployment) {
+    throw new Error("Backend offline / static deployment");
+  }
+
   const token = getStoredToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -38,23 +76,39 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(endpoint, {
-    ...options,
-    headers,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-  if (!response.ok) {
-    let errorMsg = `Request failed with status ${response.status}`;
-    try {
-      const errJson = await response.json();
-      if (errJson.error) errorMsg = errJson.error;
-    } catch {
-      // ignore
+  try {
+    const response = await fetch(endpoint, {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      if (response.status === 404 || response.status === 502 || response.status === 503) {
+        backendOffline = true;
+      }
+      let errorMsg = `Request failed with status ${response.status}`;
+      try {
+        const errJson = await response.json();
+        if (errJson.error) errorMsg = errJson.error;
+      } catch {
+        // ignore
+      }
+      throw new Error(errorMsg);
     }
-    throw new Error(errorMsg);
-  }
 
-  return response.json();
+    return response.json();
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === "AbortError" || err.message?.includes("fetch") || err.message?.includes("Network")) {
+      backendOffline = true;
+    }
+    throw err;
+  }
 }
 
 export const api = {

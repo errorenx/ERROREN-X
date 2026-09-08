@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { safeStorage } from "../services/api";
 
 export type Theme = "dark" | "light" | "system";
 
@@ -63,7 +64,7 @@ export const ThemeProvider: React.FC<{
       return "dark";
     }
 
-    const saved = localStorage.getItem(
+    const saved = safeStorage.getItem(
       "erroren_x_theme"
     ) as Theme | null;
 
@@ -88,7 +89,7 @@ export const ThemeProvider: React.FC<{
         return "violet";
       }
 
-      const saved = localStorage.getItem(
+      const saved = safeStorage.getItem(
         "erroren_x_accent"
       ) as AccentColor | null;
 
@@ -108,7 +109,7 @@ export const ThemeProvider: React.FC<{
       return true;
     }
 
-    const savedTheme = localStorage.getItem(
+    const savedTheme = safeStorage.getItem(
       "erroren_x_theme"
     ) as Theme | null;
 
@@ -136,7 +137,7 @@ export const ThemeProvider: React.FC<{
 
     const root = document.documentElement;
 
-    localStorage.setItem(
+    safeStorage.setItem(
       "erroren_x_theme",
       theme
     );
@@ -201,7 +202,7 @@ export const ThemeProvider: React.FC<{
       accentColors[accentColor] ||
       accentColors.violet;
 
-    localStorage.setItem(
+    safeStorage.setItem(
       "erroren_x_accent",
       accentColor
     );

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { User, UserPreferences } from "../types";
-import { api, getStoredToken, clearStoredToken } from "../services/api";
+import { api, getStoredToken, clearStoredToken, setStoredToken, safeStorage } from "../services/api";
+import { staticFallback } from "../services/staticFallback";
 import { useToast } from "./ToastContext";
 
 interface AuthContextType {
@@ -21,27 +22,29 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
-  const [token, setToken] = useState<string | null>(getStoredToken());
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isExplicitLogout = safeStorage.getItem("erroren_x_logged_out") === "true";
+  const initialUser: User | null = isExplicitLogout
+    ? null
+    : (staticFallback.getStoredUser() || staticFallback.getDemoUser("user"));
+
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [preferences, setPreferences] = useState<UserPreferences | null>(() => staticFallback.getPreferences());
+  const [token, setToken] = useState<string | null>(() => getStoredToken() || (initialUser ? "demo_token_static" : null));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { addToast } = useToast();
 
   const loadUserData = useCallback(async () => {
     try {
-      const explicitLogout = localStorage.getItem("erroren_x_logged_out") === "true";
-      const storedToken = getStoredToken();
-
-      if (!storedToken && explicitLogout) {
-        // User explicitly logged out; show landing page
+      const explicitLogout = safeStorage.getItem("erroren_x_logged_out") === "true";
+      if (explicitLogout) {
         setUser(null);
         setPreferences(null);
         setIsLoading(false);
         return;
       }
 
+      const storedToken = getStoredToken();
       if (!storedToken) {
-        // First-time or active visitor: auto-initialize workspace session so user immediately enters working AI app
         const res = await api.demoLogin("user");
         setUser(res.user);
         setToken(res.token);
@@ -58,17 +61,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       setPreferences(userPrefs);
     } catch (err) {
-      console.warn("Failed to restore auth session, activating demo workspace:", err);
-      try {
-        const res = await api.demoLogin("user");
-        setUser(res.user);
-        setToken(res.token);
-        const prefs = await api.getPreferences();
-        setPreferences(prefs);
-      } catch (fallbackErr) {
-        console.error("Critical fallback failed:", fallbackErr);
-        setUser(null);
-        setPreferences(null);
+      console.warn("Session restore note (continuing in workspace):", err);
+      if (safeStorage.getItem("erroren_x_logged_out") !== "true") {
+        const fallbackUser = staticFallback.getStoredUser() || staticFallback.getDemoUser("user");
+        setUser(fallbackUser);
+        setPreferences(staticFallback.getPreferences());
       }
     } finally {
       setIsLoading(false);
@@ -82,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string) => {
     setIsLoading(true);
     try {
-      localStorage.removeItem("erroren_x_logged_out");
+      safeStorage.removeItem("erroren_x_logged_out");
       const res = await api.login({ email, password: pass });
       setUser(res.user);
       setToken(res.token);
@@ -100,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, pass: string) => {
     setIsLoading(true);
     try {
-      localStorage.removeItem("erroren_x_logged_out");
+      safeStorage.removeItem("erroren_x_logged_out");
       const res = await api.register({ name, email, password: pass });
       setUser(res.user);
       setToken(res.token);
@@ -118,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const demoLogin = async (role: "user" | "admin" = "user") => {
     setIsLoading(true);
     try {
-      localStorage.removeItem("erroren_x_logged_out");
+      safeStorage.removeItem("erroren_x_logged_out");
       const res = await api.demoLogin(role);
       setUser(res.user);
       setToken(res.token);
@@ -134,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    localStorage.setItem("erroren_x_logged_out", "true");
+    safeStorage.setItem("erroren_x_logged_out", "true");
     clearStoredToken();
     setToken(null);
     setUser(null);

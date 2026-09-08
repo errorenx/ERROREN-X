@@ -7,7 +7,9 @@ export default defineConfig(() => {
   // Support GitHub Pages repository path or relative paths
   let base = './';
 
-  if (process.env.GITHUB_REPOSITORY) {
+  if (process.env.BASE_URL && process.env.BASE_URL !== '/') {
+    base = process.env.BASE_URL.endsWith('/') ? process.env.BASE_URL : `${process.env.BASE_URL}/`;
+  } else if (process.env.GITHUB_REPOSITORY) {
     const parts = process.env.GITHUB_REPOSITORY.split('/');
     const repo = parts[1] || parts[0];
     if (repo && !repo.toLowerCase().endsWith('.github.io')) {
@@ -21,8 +23,6 @@ export default defineConfig(() => {
     base = process.env.VITE_BASE_PATH.endsWith('/')
       ? process.env.VITE_BASE_PATH
       : `${process.env.VITE_BASE_PATH}/`;
-  } else if (process.env.BASE_URL) {
-    base = process.env.BASE_URL;
   }
 
   return {

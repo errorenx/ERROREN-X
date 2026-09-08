@@ -44,6 +44,38 @@ export const DEFAULT_STATIC_MODELS: ModelCatalogItem[] = [
   },
 ];
 
+export const safeStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window === "undefined" || !window.localStorage) return null;
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem(key, value);
+      }
+    } catch {}
+  },
+  removeItem(key: string): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {}
+  },
+  clear(): void {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.clear();
+      }
+    } catch {}
+  }
+};
+
 const LOCAL_STORAGE_CONVERSATIONS = "erroren_x_local_conversations";
 const LOCAL_STORAGE_USER = "erroren_x_local_user";
 const LOCAL_STORAGE_PREFS = "erroren_x_local_prefs";
@@ -51,7 +83,7 @@ const LOCAL_STORAGE_IMAGE_HISTORY = "erroren_x_local_images";
 
 export const staticFallback = {
   getDemoUser(role: "admin" | "user" = "user"): User {
-    const saved = localStorage.getItem(LOCAL_STORAGE_USER);
+    const saved = safeStorage.getItem(LOCAL_STORAGE_USER);
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -66,12 +98,12 @@ export const staticFallback = {
       avatar: "",
       createdAt: new Date().toISOString(),
     };
-    localStorage.setItem(LOCAL_STORAGE_USER, JSON.stringify(user));
+    safeStorage.setItem(LOCAL_STORAGE_USER, JSON.stringify(user));
     return user;
   },
 
   getStoredUser(): User | null {
-    const saved = localStorage.getItem(LOCAL_STORAGE_USER);
+    const saved = safeStorage.getItem(LOCAL_STORAGE_USER);
     if (!saved) return null;
     try {
       return JSON.parse(saved);
@@ -93,7 +125,7 @@ export const staticFallback = {
       webSearchDefault: false,
       saveHistory: true,
     };
-    const saved = localStorage.getItem(LOCAL_STORAGE_PREFS);
+    const saved = safeStorage.getItem(LOCAL_STORAGE_PREFS);
     if (!saved) return defaultPrefs;
     try {
       return { ...defaultPrefs, ...JSON.parse(saved) };
@@ -105,12 +137,12 @@ export const staticFallback = {
   updatePreferences(prefs: Partial<UserPreferences>): UserPreferences {
     const current = this.getPreferences();
     const updated = { ...current, ...prefs };
-    localStorage.setItem(LOCAL_STORAGE_PREFS, JSON.stringify(updated));
+    safeStorage.setItem(LOCAL_STORAGE_PREFS, JSON.stringify(updated));
     return updated;
   },
 
   getConversations(): Conversation[] {
-    const saved = localStorage.getItem(LOCAL_STORAGE_CONVERSATIONS);
+    const saved = safeStorage.getItem(LOCAL_STORAGE_CONVERSATIONS);
     if (!saved) {
       const welcomeConv: Conversation = {
         id: "conv_welcome",
@@ -134,7 +166,7 @@ export const staticFallback = {
           },
         ],
       };
-      localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify([welcomeConv]));
+      safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify([welcomeConv]));
       return [welcomeConv];
     }
     try {
@@ -166,7 +198,7 @@ export const staticFallback = {
       messages: [],
     };
     list.unshift(newConv);
-    localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
+    safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
     return newConv;
   },
 
@@ -180,13 +212,13 @@ export const staticFallback = {
       updatedAt: new Date().toISOString(),
     };
     list[index] = updated;
-    localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
+    safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
     return updated;
   },
 
   deleteConversation(id: string): void {
     const list = this.getConversations().filter((c) => c.id !== id);
-    localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
+    safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
   },
 
   clearConversation(id: string): void {
@@ -195,7 +227,7 @@ export const staticFallback = {
     if (conv) {
       conv.messages = [];
       conv.updatedAt = new Date().toISOString();
-      localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
+      safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
     }
   },
 
@@ -206,7 +238,7 @@ export const staticFallback = {
       if (!conv.messages) conv.messages = [];
       conv.messages.push(message);
       conv.updatedAt = new Date().toISOString();
-      localStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
+      safeStorage.setItem(LOCAL_STORAGE_CONVERSATIONS, JSON.stringify(list));
     }
   },
 
@@ -310,7 +342,7 @@ export const staticFallback = {
   },
 
   getImageHistory(): Array<any> {
-    const saved = localStorage.getItem(LOCAL_STORAGE_IMAGE_HISTORY);
+    const saved = safeStorage.getItem(LOCAL_STORAGE_IMAGE_HISTORY);
     if (!saved) return [];
     try {
       return JSON.parse(saved);
@@ -322,7 +354,7 @@ export const staticFallback = {
   saveImageToHistory(item: any): void {
     const list = this.getImageHistory();
     list.unshift(item);
-    localStorage.setItem(LOCAL_STORAGE_IMAGE_HISTORY, JSON.stringify(list.slice(0, 50)));
+    safeStorage.setItem(LOCAL_STORAGE_IMAGE_HISTORY, JSON.stringify(list.slice(0, 50)));
   },
 
   getAdminStats(): AdminStats {

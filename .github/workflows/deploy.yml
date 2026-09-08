@@ -32,18 +32,20 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Setup GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Build Application
         run: npm run build
         env:
           NODE_ENV: production
+          BASE_URL: ${{ steps.pages.outputs.base_path }}/
 
       - name: Ensure .nojekyll and 404.html in build output
         run: |
           touch dist/.nojekyll
           cp public/404.html dist/404.html || cp dist/index.html dist/404.html
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload Build Artifacts
         uses: actions/upload-pages-artifact@v3
